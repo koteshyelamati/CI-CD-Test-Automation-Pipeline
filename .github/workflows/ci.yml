@@ -45,7 +45,7 @@ jobs:
 
     - name: Archive Pytest HTML Report
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: pytest-html-report-${{ matrix.python-version }}
         path: pytest-report.html
