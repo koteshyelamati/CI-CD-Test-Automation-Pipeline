@@ -1,0 +1,31 @@
+# Start from the official Jenkins LTS image
+FROM jenkins/jenkins:lts-jdk11
+
+# Switch to root user to install packages
+USER root
+
+# Install Docker CLI
+RUN apt-get update && \
+    apt-get install -y lsb-release && \
+    curl -fsSLo /usr/share/keyrings/docker-archive-keyring.asc \
+    https://download.docker.com/linux/debian/gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) \
+    signed-by=/usr/share/keyrings/docker-archive-keyring.asc] \
+    https://download.docker.com/linux/debian \
+    $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list && \
+    apt-get update && \
+    apt-get install -y docker-ce-cli
+
+# Install docker-compose (optional, if you need it inside Jenkins master/agent)
+RUN apt-get install -y python3-pip && \
+    pip3 install docker-compose
+
+# Switch back to jenkins user
+USER jenkins
+
+# Optional: Pre-install Jenkins plugins if needed, by creating a plugins.txt file
+# COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
+# RUN jenkins-plugin-cli -f /usr/share/jenkins/ref/plugins.txt
+
+# Jenkins will be started by the entrypoint script from the base image
+# /usr/local/bin/jenkins.sh
