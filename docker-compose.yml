@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./app:/usr/src/app/app
+      - ./tests:/usr/src/app/tests
+    environment:
+      - FLASK_ENV=development # Ensures Flask runs in development mode with auto-reloader
+      - FLASK_APP=app/main.py
+      - FLASK_DEBUG=1 # Enables debugger, use with caution
+    command: flask run --host=0.0.0.0 # Prefer Flask dev server with reloader for local app dev
+
+  jenkins:
+    build:
+      context: ./jenkins # Path to the directory containing Dockerfile-jenkins
+      dockerfile: Dockerfile-jenkins
+    privileged: true # Required for Docker-in-Docker if Jenkins needs to build images
+    user: root # Jenkins master runs as root to manage docker.sock, agent will run as jenkins
+    ports:
+      - "8080:8080" # Jenkins UI
+      - "50000:50000" # Jenkins agent communication
+    volumes:
+      - jenkins_home:/var/jenkins_home # Persist Jenkins data
+      - /var/run/docker.sock:/var/run/docker.sock # Mount docker socket for Docker-in-Docker
+      # The Jenkinsfile will be checked out from SCM by the Jenkins job itself,
+      # so no need to mount it directly here for a typical pipeline setup.
+      # If you were running a specific job that expects it locally, you might:
+      # - ./Jenkinsfile:/var/jenkins_home/Jenkinsfile_local_test
+    environment:
+      - JENKINS_OPTS="--prefix=/jenkins" # Optional: if you want Jenkins on /jenkins path
+      - JAVA_OPTS="-Djenkins.install.runSetupWizard=false -Duser.timezone=America/Los_Angeles" # Skip setup wizard, set timezone
+      # Pass Docker host so Jenkins inside Docker can reach Docker daemon on host
+      # This is an alternative or addition to mounting docker.sock, depending on setup complexities
+      # - DOCKER_HOST=unix:///var/run/docker.sock
+    # We need to install docker client inside the jenkins container if it's not already there
+    # The lts-jdk11 image does not include it by default.
+    # A custom Dockerfile for Jenkins would be a cleaner way to do this.
+    # For now, a simple approach:
+    # entrypoint: /bin/bash -c "apt-get update && apt-get install -y docker.io && /usr/local/bin/jenkins.sh"
+    # Safer: Use an image that has docker client or use agent { docker { image 'docker:latest' } } in Jenkinsfile
+
+volumes:
+  jenkins_home: # Define the jenkins_home volume for data persistence

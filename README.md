@@ -1,15 +1,90 @@
-Overview:
-This project showcases how to build a fully automated CI/CD pipeline for a Python-based microservice. I used GitHub Actions for test automation and integrated it with Jenkins for parallel execution. The app is containerized using Docker, and PyTest handles all unit and functional testing.
+# Python Microservice CI/CD Pipeline Demo
 
-What I Did:
+This project demonstrates a complete CI/CD test automation pipeline for a Python microservice. It showcases the integration of GitHub Actions, Jenkins, Docker, and PyTest, along with code coverage, Slack alerts (placeholders), and deployment (placeholder).
 
-Created a Flask microservice with health check and mock data endpoints
+[![CI Pipeline Status](https://github.com/koteshyelamati/CI-CD-Test-Automation-Pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/koteshyelamati/CI-CD-Test-Automation-Pipeline/actions/workflows/ci.yml)
 
-Wrote PyTest test cases and tracked coverage using Codecov
+## 🚀 Project Overview
 
-Set up GitHub Actions to run tests on every pull request
+A minimal Python microservice built with Flask, exposing two simple endpoints:
+- `/health`: Returns a health status of the service.
+- `/mock-data`: Returns a sample JSON data response.
 
-Integrated Jenkins (via Docker) to support additional CI/CD stages
+The project emphasizes clean, modular coding standards and testability.
 
-Configured Slack notifications for build and test results
+## 📁 Project Structure
 
+/
+├── .github/
+│ └── workflows/
+│ └── ci.yml
+├── app/
+│ ├── init.py
+│ └── main.py
+├── jenkins/
+│ └── Dockerfile-jenkins
+├── tests/
+│ ├── init.py
+│ └── test_app.py
+├── .dockerignore
+├── Dockerfile
+├── docker-compose.yml
+├── Jenkinsfile
+├── requirements.txt
+└── README.md
+
+markdown
+Copy code
+
+## 🏗️ Architecture
+
+- Flask microservice (`app/main.py`)
+- Unit + functional tests with PyTest (`tests/test_app.py`)
+- CI/CD:
+  - GitHub Actions for build/test on PRs
+  - Jenkins with Docker integration for staging tests
+- Reporting: HTML, coverage, JUnit XML
+
+## 🛠️ CI/CD Workflows
+
+### GitHub Actions
+- Trigger: PRs and pushes to `main`
+- Runs PyTest, generates reports, uploads artifacts
+
+### Jenkins
+- Jenkinsfile pipeline:
+  - Docker build
+  - Run tests in container
+  - Archive reports
+
+## 💻 Local Development
+
+### Clone and Setup
+```bash
+git clone https://github.com/koteshyelamati/CI-CD-Test-Automation-Pipeline.git
+cd CI-CD-Test-Automation-Pipeline
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python app/main.py
+Visit: http://localhost:5000/health
+
+Run with Docker
+bash
+Copy code
+docker-compose up --build app
+Run Tests
+bash
+Copy code
+pytest --cov=app --cov-report=term-missing --html=pytest-report.html --self-contained-html tests/
+🧱 Jenkins Setup
+bash
+Copy code
+docker-compose up --build jenkins
+Open Jenkins at: http://localhost:8080
+Find admin password in logs:
+
+bash
+Copy code
+docker-compose logs jenkins | grep "Jenkins initial admin password"
+🔔 Slack & Deployment (Optional)

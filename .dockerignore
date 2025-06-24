@@ -1,0 +1,52 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+*.egg-info/
+.DS_Store
+
+# IDE / Editor specific
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test reports and coverage
+htmlcov/
+.coverage
+coverage.xml
+junit-report.xml
+pytest-report.html
+
+# Jenkins
+jenkins_home/
+
+# GitHub Actions
+.github/
+
+# Readme (often not needed in the image itself)
+# README.md
+
+# Local development files
+# .env
+
+# Build artifacts
+dist/
+build/
+*.egg
+*.tar.gz
+*.whl
